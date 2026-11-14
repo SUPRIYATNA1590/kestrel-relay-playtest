@@ -7,7 +7,8 @@
 // player could not know: no wallhacks, no perfect aim.
 import * as THREE from 'three';
 import { createBody } from './body.js';
-import { WEAPONS, HOLDS } from './config.js';
+import { WEAPONS } from './config.js';
+import { HOLDS } from './world.js';
 
 const NAMES = {
   vipers: ['Ash', 'Bramble', 'Cinder', 'Dune'],
