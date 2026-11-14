@@ -457,6 +457,13 @@ function runShot(name) {
     // player fires once, so the tracer and the hit marker are in the frame.
     rounds.state.phase = 'live';
     rounds.state.timer = 82;
+    player.body.state.position.set(0, 0, 6);
+    player.body.state.yaw = Math.PI;
+    settle(20);
+    // Place the marks AFTER the settle: the bots walk during the sim, so placing
+    // them first would leave the aim point stale and the shot would miss. The
+    // scene has not rendered yet, so force the matrices current or the raycast
+    // would test the bots where they stood at spawn, not where they stand now.
     const bot = sentinels[0];
     bot.body.state.position.set(2, 0, -4);
     bot.body.state.yaw = 0;
@@ -465,15 +472,13 @@ function runShot(name) {
     bot2.body.state.position.set(-5, 0, -9);
     bot2.body.state.yaw = Math.PI / 2;
     bot2.parts.group.position.set(-5, 0, -9);
-    player.body.state.position.set(0, 0, 6);
-    player.body.state.yaw = Math.PI;
-    settle(20);
+    scene.updateMatrixWorld(true);
     player.arsenal.buy('rifle');
     player.arsenal.equip('rifle');
     aimAt(new THREE.Vector3(2, 1.1, -4));
     shoot(0);
-    settle(8);
-    aimAt(new THREE.Vector3(2, 1.1, -4));
+    // No settle after the shot: the tracer lives 60 ms and the hit marker 90 ms,
+    // and paintTwiceThenReady renders within ~2 frames, so both stay in the frame.
   } else if (name === 'buy') {
     hud.showBuy({ smg: false, rifle: false, sniper: false, grenade: false, armor: false });
     player.body.state.position.set(0, 0, 18);

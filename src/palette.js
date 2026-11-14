@@ -3,7 +3,7 @@
 // teal for the Sentinels. The lighting makes every shade the game needs, so no other
 // colour appears in the code. The same names are the CSS custom properties in index.html.
 export const PALETTE = {
-  canvas: '#1a1410', // dusk sky, also the page background
+  canvas: '#2f2438', // dusk sky, also the page background
   surface: '#3a2f26', // packed sand and concrete
   hairline: '#5c4a38', // crates, barriers and low cover
   ink: '#efe7d8', // sun-bleached walls and the HUD text
