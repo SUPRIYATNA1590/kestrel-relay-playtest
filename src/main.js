@@ -233,6 +233,7 @@ function shoot(spread) {
   direction.normalize();
   player.eyePosition(eye);
   const hit = combat.fire(eye, direction, def, { bots: bots.bots, playerBody: null, exclude: 'player' });
+  console.log('[shot-debug]', JSON.stringify({ eye: [eye.x, eye.y, eye.z], dir: [direction.x, direction.y, direction.z], hit: hit ? { kind: hit.kind, part: hit.part, dist: hit.distance, point: [hit.point.x, hit.point.y, hit.point.z] } : null, bot0: [bots.bots[4].body.state.position.x, bots.bots[4].body.state.position.y, bots.bots[4].body.state.position.z], group0: [bots.bots[4].parts.group.position.x, bots.bots[4].parts.group.position.y, bots.bots[4].parts.group.position.z] }));
   if (hit && hit.kind === 'bot') applyDamage(hit.target, hit.damage, player, hit.part);
   audio.shot(arsenal.state.current, 0);
   bots.notifyShot(player.body.state.position, 'vipers', elapsed);
