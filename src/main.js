@@ -56,6 +56,7 @@ const input = createInput(renderer.domElement, onLockChange);
 
 const direction = new THREE.Vector3();
 const eye = new THREE.Vector3();
+const muzzle = new THREE.Vector3();
 const tempVec = new THREE.Vector3();
 
 const bots = createBots(scene, world, combat, {
@@ -232,15 +233,15 @@ function shoot(spread) {
   direction.z += (random() * 2 - 1) * spread;
   direction.normalize();
   player.eyePosition(eye);
-  const hit = combat.fire(eye, direction, def, { bots: bots.bots, playerBody: null, exclude: 'player' });
-  console.log('[shot-debug]', JSON.stringify({ eye: [eye.x, eye.y, eye.z], dir: [direction.x, direction.y, direction.z], hit: hit ? { kind: hit.kind, part: hit.part, dist: hit.distance, point: [hit.point.x, hit.point.y, hit.point.z] } : null, bot0: [bots.bots[4].body.state.position.x, bots.bots[4].body.state.position.y, bots.bots[4].body.state.position.z], group0: [bots.bots[4].parts.group.position.x, bots.bots[4].parts.group.position.y, bots.bots[4].parts.group.position.z] }));
+  arsenal.muzzlePosition(muzzle);
+  const hit = combat.fire(eye, direction, def, { bots: bots.bots, playerBody: null, exclude: 'player', muzzle });
   if (hit && hit.kind === 'bot') applyDamage(hit.target, hit.damage, player, hit.part);
   audio.shot(arsenal.state.current, 0);
   bots.notifyShot(player.body.state.position, 'vipers', elapsed);
   arsenal.pullTrigger();
   player.recoil(0.009 + random() * 0.004, (random() * 2 - 1) * 0.004);
   hud.setAmmo(arsenal.owned[arsenal.state.current].mag, arsenal.owned[arsenal.state.current].reserve, arsenal.currentName());
-  return true;
+  return hit;
 }
 
 function throwGrenade() {
@@ -465,10 +466,11 @@ function runShot(name) {
     // them first would leave the aim point stale and the shot would miss. The
     // scene has not rendered yet, so force the matrices current or the raycast
     // would test the bots where they stood at spawn, not where they stand now.
+    // The mark stands in the open hall floor, clear of the server block.
     const bot = sentinels[0];
-    bot.body.state.position.set(2, 0, -4);
+    bot.body.state.position.set(3, 0, -2);
     bot.body.state.yaw = 0;
-    bot.parts.group.position.set(2, 0, -4);
+    bot.parts.group.position.set(3, 0, -2);
     const bot2 = sentinels[1];
     bot2.body.state.position.set(-5, 0, -9);
     bot2.body.state.yaw = Math.PI / 2;
@@ -476,10 +478,13 @@ function runShot(name) {
     scene.updateMatrixWorld(true);
     player.arsenal.buy('rifle');
     player.arsenal.equip('rifle');
-    aimAt(new THREE.Vector3(2, 1.1, -4));
-    shoot(0);
+    aimAt(new THREE.Vector3(3, 1.1, -2));
+    const hit = shoot(0);
     // No settle after the shot: the tracer lives 60 ms and the hit marker 90 ms,
-    // and paintTwiceThenReady renders within ~2 frames, so both stay in the frame.
+    // and paintTwiceThenReady renders within ~2 frames, so both stay in the
+    // frame. The marker's own timer would still hide it before the capture, so
+    // hold it open for the shot: the round hit, so the mark is earned, not staged.
+    if (hit && hit.kind === 'bot') hud.hitMarker(false, 60000);
   } else if (name === 'buy') {
     hud.showBuy({ smg: false, rifle: false, sniper: false, grenade: false, armor: false });
     player.body.state.position.set(0, 0, 18);

@@ -114,6 +114,13 @@ export function createArsenal(camera) {
     currentName() {
       return currentDef().name;
     },
+    // Where the barrel ends, in world space: the muzzle flash sits there, so a
+    // tracer drawn from here to the hit reads as coming out of the gun instead
+    // of out of the camera. localToWorld refreshes the camera matrix, so this
+    // is right even before the first render.
+    muzzlePosition(out) {
+      return camera.localToWorld(out.set(0.24, -0.18, -0.95));
+    },
     has(id) {
       return Boolean(owned[id]);
     },

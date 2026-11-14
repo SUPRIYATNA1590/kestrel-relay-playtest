@@ -23,7 +23,7 @@ export function createCombat(scene, world) {
   const tracers = [];
   const tracerMat = new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false });
   for (let i = 0; i < TRACERS; i += 1) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 1), tracerMat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 1), tracerMat);
     mesh.visible = false;
     scene.add(mesh);
     tracers.push({ mesh, left: 0 });
@@ -148,7 +148,9 @@ export function createCombat(scene, world) {
         }
       }
       const end = best ? best.point : point.copy(origin).addScaledVector(direction, 80);
-      showTracer(from, end, def.tracer);
+      // The ray starts at the eye for an honest hit, but the tracer starts at
+      // the muzzle when the caller knows it, so it reads as a shot from the gun.
+      showTracer(targets.muzzle || from, end, def.tracer);
       if (!best) return null;
       if (best.kind === 'world') {
         burstSparks(best.point, 4);
