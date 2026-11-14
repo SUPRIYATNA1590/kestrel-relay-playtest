@@ -177,7 +177,7 @@ export function createWorld(scene) {
   // The dusk sky: a low sun disc in the west, mesas beyond the walls, and the fog that
   // swallows the far corners.
   const sun = new THREE.Mesh(new THREE.CircleGeometry(6, 24), new THREE.MeshBasicMaterial({ color: 0xffb347, fog: false }));
-  sun.position.set(-70, 14, -30);
+  sun.position.set(-70, 22, -30);
   sun.lookAt(0, 2, 0);
   group.add(sun);
   for (const [w, h, x, z] of [[40, 7, -20, -46], [30, 9, 30, -48], [36, 6, 55, -20], [30, 8, -58, 10]]) {
@@ -187,6 +187,8 @@ export function createWorld(scene) {
   }
 
   // Site rings: amber for A, teal for B, flat on the ground where the spike goes.
+  // Site A sits on a raised pad (top at y 0.5), so its ring rides on the pad;
+  // site B is at ground level, so its ring sits just above the sand.
   for (const [site, color] of [['A', 0xf0a830], ['B', 0x7fb4c7]]) {
     const center = site === 'A' ? [-25, -15] : [25, -15];
     const ring = new THREE.Mesh(
@@ -194,15 +196,16 @@ export function createWorld(scene) {
       new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.65, side: THREE.DoubleSide }),
     );
     ring.rotation.x = -Math.PI / 2;
-    ring.position.set(center[0], 0.06, center[1]);
+    ring.position.set(center[0], site === 'A' ? 0.56 : 0.06, center[1]);
     group.add(ring);
   }
 
   // Light: a low warm sun from the west, a violet dusk fill from the east, and the sky.
-  const sky = new THREE.HemisphereLight(new THREE.Color(0x8a7bb8), new THREE.Color(PALETTE.surface), 0.9);
+  // The sun sits high enough that the west wall's shadow does not swallow site A.
+  const sky = new THREE.HemisphereLight(new THREE.Color(0x8a7bb8), new THREE.Color(PALETTE.surface), 1.05);
   scene.add(sky);
   const sunLight = new THREE.DirectionalLight(new THREE.Color(0xffb347), 2.4);
-  sunLight.position.set(-30, 16, 8);
+  sunLight.position.set(-30, 24, 10);
   sunLight.target.position.set(0, 0, 0);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.set(2048, 2048);
