@@ -495,6 +495,9 @@ function runShot(name) {
     rounds.state.timer = 64;
     player.body.state.position.set(-25, 0.5, -13.5);
     player.body.state.yaw = Math.PI * 0.92;
+    // Look across the site toward the antenna tower: the plant ring, the yard
+    // and the tower all read in one frame, instead of a dark container wall.
+    aimAt(new THREE.Vector3(-27, 1.0, -17));
     settle(10);
     rounds.state.spike.progress = CONFIG.plantSeconds * 0.6;
     syncHud();
@@ -505,7 +508,9 @@ function runShot(name) {
     rounds.state.score.vipers = 2;
     rounds.state.score.sentinels = 1;
     rounds.state.round = 3;
-    hud.banner('Vipers win the round', 'Round 3: the other team is wiped out.', 4000);
+    // Hold the banner open for the capture: software rendering is slow enough
+    // that the usual 4 s hold can expire before the pixels are taken.
+    hud.banner('Vipers win the round', 'Round 3: the other team is wiped out.', 60000);
     player.body.state.position.set(0, 0, 8);
     player.body.state.yaw = Math.PI;
     settle(10);
