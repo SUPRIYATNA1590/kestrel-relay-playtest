@@ -493,11 +493,11 @@ function runShot(name) {
   } else if (name === 'plant') {
     rounds.state.phase = 'live';
     rounds.state.timer = 64;
-    player.body.state.position.set(-25, 0.5, -13.5);
-    player.body.state.yaw = Math.PI * 0.92;
-    // Look across the site toward the antenna tower: the plant ring, the yard
-    // and the tower all read in one frame, instead of a dark container wall.
-    aimAt(new THREE.Vector3(-27, 1.0, -17));
+    // Stand just south of the ring and look north across the site: the ring in
+    // the foreground, the antenna tower rising behind it, the yard readable.
+    player.body.state.position.set(-25, 0.5, -12.5);
+    player.body.state.yaw = Math.PI;
+    aimAt(new THREE.Vector3(-25, 1.5, -20));
     settle(10);
     rounds.state.spike.progress = CONFIG.plantSeconds * 0.6;
     syncHud();
